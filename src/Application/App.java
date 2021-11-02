@@ -1,17 +1,15 @@
 package Application;
 
-import java.util.Date;
-
-import model.entities.Department;
+import model.dao.SellerDao;
 import model.entities.Seller;
-
+import model.dao.DaoFactory;
 public class App {
     public static void main(String[] args) throws Exception {
        
-        Department obj = new Department(1, "Book");
+        SellerDao sellerdao = DaoFactory.createSellerDao();
         
     
-        Seller seller = new Seller(21, "Luzia","luzia@gmail.com" , new Date(), 3200.00, obj);
+        Seller seller = sellerdao.findbyId(3);
 
         System.out.println(seller);
     
