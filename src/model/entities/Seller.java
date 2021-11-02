@@ -6,7 +6,7 @@ import java.util.Date;
 public class Seller implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    
+
     private Integer id;
     private String name;
     private String email;
@@ -15,7 +15,7 @@ public class Seller implements Serializable {
 
     private Department department;
 
-    public Seller(){
+    public Seller() {
 
     }
 
@@ -27,8 +27,6 @@ public class Seller implements Serializable {
         this.baseSalary = baseSalary;
         this.department = department;
     }
-
-    
 
     public Department getDepartment() {
         return department;
@@ -108,7 +106,5 @@ public class Seller implements Serializable {
         return "Seller [baseSalary=" + baseSalary + ", birthDate=" + birthDate + ", department=" + department
                 + ", email=" + email + ", id=" + id + ", name=" + name + "]";
     }
-    
-    
 
 }
