@@ -4,6 +4,7 @@ import java.util.List;
 
 import model.dao.DaoFactory;
 import model.dao.SellerDao;
+import model.entities.Department;
 import model.entities.Seller;
 
 public class App {
@@ -11,7 +12,13 @@ public class App {
 
         SellerDao sellerdao = DaoFactory.createSellerDao();
 
-        List<Seller> seller = sellerdao.findAll();
+        
+
+        Department dep = new Department(1, null);
+
+        List<Seller> seller = sellerdao.findByDepartment(dep);
+        
+
 
         seller.forEach(System.out::println);
 

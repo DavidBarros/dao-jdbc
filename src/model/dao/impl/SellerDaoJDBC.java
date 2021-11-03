@@ -5,7 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import db.DB;
 import db.DbException;
@@ -37,7 +39,7 @@ public class SellerDaoJDBC implements SellerDao {
 
     @Override
     public Seller findbyId(Integer id) {
-        
+
         PreparedStatement st = null;
         ResultSet rs = null;
 
@@ -53,9 +55,8 @@ public class SellerDaoJDBC implements SellerDao {
             if (rs.next()) {
 
                 Department dep = instantiateDeparment(rs);
-               
+
                 Seller obj = instantiateSeller(rs, dep);
-               
 
                 return obj;
 
@@ -74,32 +75,29 @@ public class SellerDaoJDBC implements SellerDao {
 
     }
 
-  
-        
-
     @Override
     public List<Seller> findAll() {
-        
+
         PreparedStatement st = null;
         ResultSet rs = null;
 
         try {
 
-            String sql = "SELECT seller.*, department.Name as DepName " + "FROM seller INNER JOIN department "
-                    + "ON seller.DepartmentId = department.Id ";
+            String sql = "SELECT DISTINCT seller.*, department.Name as DepName " + "FROM seller INNER JOIN department "
+                    + "ON seller.DepartmentId = department.Id " + "ORDER BY Name";
 
             st = conn.prepareStatement(sql);
             rs = st.executeQuery();
             List<Seller> list = new ArrayList<>();
 
             if (rs.next()) {
-                
+
                 do {
-                
+
                     Department dep = instantiateDeparment(rs);
-                    
+
                     Seller obj = instantiateSeller(rs, dep);
-                    
+
                     list.add(obj);
 
                 } while (rs.next());
@@ -120,16 +118,64 @@ public class SellerDaoJDBC implements SellerDao {
         }
     }
 
-    private Department instantiateDeparment(ResultSet rs) throws SQLException{
-        
+    @Override
+    public List<Seller> findByDepartment(Department department) {
+        PreparedStatement st = null;
+        ResultSet rs = null;
+
+        try {
+
+            String sql = "SELECT seller.*, department.Name as DepName " + "FROM seller INNER JOIN department "
+                    + "ON seller.DepartmentId = department.Id " + "WHERE department.Id = ? " + "ORDER BY Name";
+
+            st = conn.prepareStatement(sql);
+
+            st.setInt(1, department.getId());
+
+            rs = st.executeQuery();
+
+            List<Seller> list = new ArrayList<>();
+
+            Map<Integer, Department> map = new HashMap<>();
+
+            while (rs.next()) {
+
+                Department dep = map.get(rs.getInt("DepartmentId"));
+
+                if (dep == null) {
+
+                    dep = instantiateDeparment(rs);
+                    map.put(rs.getInt("DepartmentId"), dep);
+
+                }
+
+                Seller obj = instantiateSeller(rs, dep);
+                list.add(obj);
+
+            }
+
+            return list;
+
+        } catch (SQLException e) {
+
+            throw new DbException(e.getMessage());
+
+        } finally {
+            DB.closeStatement(st);
+            DB.closeResultSet(rs);
+        }
+    }
+
+    private Department instantiateDeparment(ResultSet rs) throws SQLException {
+
         Department dep = new Department();
         dep.setId(rs.getInt("DepartmentId"));
         dep.setName(rs.getString("DepName"));
-        
+
         return dep;
     }
 
-    private Seller instantiateSeller(ResultSet rs, Department dep) throws SQLException{
+    private Seller instantiateSeller(ResultSet rs, Department dep) throws SQLException {
 
         Seller obj = new Seller();
         obj.setId(rs.getInt("seller.Id"));
@@ -138,8 +184,8 @@ public class SellerDaoJDBC implements SellerDao {
         obj.setBirthDate(rs.getDate("seller.BirthDate"));
         obj.setBaseSalary(rs.getDouble("seller.BaseSalary"));
         obj.setDepartment(dep);
-        
+
         return obj;
     }
 
-}   
+}
