@@ -11,8 +11,6 @@ public class App2 {
 
         DepartmentDao departmentDao = DaoFactory.createDepartmentDao();
 
-
-
         System.out.println("\n=== TEST 4: department insert =====");
         Department newDepartment = new Department(null, "Sexyshop");
         departmentDao.insert(newDepartment);
