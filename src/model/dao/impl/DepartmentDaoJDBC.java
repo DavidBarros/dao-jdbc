@@ -71,7 +71,7 @@ public class DepartmentDaoJDBC implements DepartmentDao {
             st = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
             st.setString(1, obj.getName());
-
+            st.setInt(2, obj.getId());
             st.executeUpdate();
 
         } 
@@ -118,8 +118,8 @@ public class DepartmentDaoJDBC implements DepartmentDao {
         ResultSet rs = null;
         try {
 
-            String sql = "SELECT *"
-                        +"FROM department"
+            String sql = "SELECT * "
+                        +"FROM department "
                         +"WHERE department.Id = ?";
             
             st = conn.prepareStatement(sql);
