@@ -3,7 +3,9 @@ package model.dao.impl;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 import db.DB;
@@ -153,8 +155,47 @@ public class DepartmentDaoJDBC implements DepartmentDao {
 
     @Override
     public List<Department> findAll() {
-        // TODO Auto-generated method stub
-        return null;
+        PreparedStatement st = null;
+        ResultSet rs = null;
+
+        try {
+
+            String sql = "SELECT DISTINCT * " 
+                         + "FROM department ";
+                         
+                      
+
+            st = conn.prepareStatement(sql);
+            rs = st.executeQuery();
+            List<Department> list = new ArrayList<>();
+
+            if (rs.next()) {
+
+                do {
+
+                    Department dep = new Department();
+                    dep.setId(rs.getInt("department.Id"));
+                    dep.setName(rs.getString("department.Name"));
+
+                    list.add(dep);
+
+                } while (rs.next());
+
+                return list;
+
+            } else {
+                return null;
+            }
+
+        } catch (SQLException e) {
+
+            throw new DbException(e.getMessage());
+
+        } finally {
+            DB.closeStatement(st);
+            DB.closeResultSet(rs);
+        }
+        
     }
     
     
